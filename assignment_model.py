@@ -1,8 +1,8 @@
 import pandas as pd
-from sklearn.preprocessing import OneHotEncoder
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
+from sklearn.impute import SimpleImputer
 from sklearn.ensemble import VotingClassifier, RandomForestClassifier, GradientBoostingClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
@@ -12,7 +12,7 @@ from sklearn.metrics import classification_report, confusion_matrix
 
 
 
-"""#Loading dataset"""
+"""# Loading dataset"""
 
 df = pd.read_csv("social_network_ads_dataset.csv")
 
@@ -22,32 +22,44 @@ print("Dataset shape:", df.shape)
 
 print(df.isnull().sum())
 
+# Step 1: remove duplicate rows.
+df = df.drop_duplicates().reset_index(drop=True)
 
-
-"""# Data pre-pocessing"""
-
+# Step 2: drop the identifier column.
 df = df.drop(columns=['User ID'])
+
+# Step 3: normalize categorical text values.
+df['Gender'] = df['Gender'].astype(str).str.strip().str.title()
 
 print(df.describe())
 
 
 
-
-"""#Processing the data"""
+# Step 4: build preprocessing pipelines for numeric and categorical features.
 
 numeric_features = ['Age', 'EstimatedSalary']
 categorical_features = ['Gender']
 
+numeric_transformer = Pipeline([
+    ('imputer', SimpleImputer(strategy='median')),
+    ('scaler', StandardScaler())
+])
+
+categorical_transformer = Pipeline([
+    ('imputer', SimpleImputer(strategy='most_frequent')),
+    ('encoder', OneHotEncoder(drop='first', handle_unknown='ignore'))
+])
+
 preprocessor = ColumnTransformer(
     transformers=[
-        ('num', StandardScaler(), numeric_features),
-        ('cat', OneHotEncoder(drop='first'), categorical_features)
+        ('num', numeric_transformer, numeric_features),
+        ('cat', categorical_transformer, categorical_features)
     ]
 )
 
 
 
-"""#Creating the pipeline and model training"""
+# Step 5: create the training pipeline and train the model.
 
 X = df[['Gender', 'Age', 'EstimatedSalary']]
 y = df['Purchased']

@@ -1,13 +1,16 @@
 import gradio as gr
 import pickle
 import pandas as pd
-from sklearn.metrics import accuracy_score
 
-#  open the file
-with open("bestmodel.pkl", "rb") as f:
-    best_model = pickle.load(f)
+try:
+    with open("bestmodel.pkl", "rb") as f:
+        best_model = pickle.load(f)
+except FileNotFoundError as exc:
+    raise FileNotFoundError(
+        "bestmodel.pkl not found. Run assignment_model.py first to generate the model."
+    ) from exc
 
-#prediction function
+# Prediction function
 def predict_purchase(gender, age, salary):
     input_df = pd.DataFrame([[gender, age, salary]],
                             columns=['Gender', 'Age', 'EstimatedSalary'])
@@ -21,7 +24,7 @@ def predict_purchase(gender, age, salary):
     return f"{result}\nProbability of purchase: {prob:.2f}"
 
 
-#Gradio interface
+# Gradio interface
 interface = gr.Interface(
     fn=predict_purchase,
     inputs=[
