@@ -17,8 +17,7 @@ This project trains a machine learning model to predict whether a user will purc
 4. Start the app with `python app.py`.
 
 ## Prediction Screenshot
-<img width="1912" height="497" alt="image" src="https://github.com/user-attachments/assets/c1e10b48-a77b-4dd4-a12b-009c13af893c" />
-
+<img width="1862" height="565" alt="Screenshot 2026-04-28 035814" src="https://github.com/user-attachments/assets/e844d398-ff53-4505-93cd-7040ab637bfc" />
 
 ## Notes
 
